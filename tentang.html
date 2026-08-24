@@ -22,9 +22,13 @@
 <section class="section">
   <div class="container">
     <span class="eyebrow">Profil Organisasi</span>
-    <h2 style="max-width:26ch;">Sejarah &amp; Peran PK KNPI Cibinong</h2>
-    <div id="sejarahText" style="max-width:74ch;color:#374151;font-size:1.02rem;">
-      <p>Memuat profil organisasi…</p>
+    <div id="sejarahText" class="history-content">
+      <h3>Sejarah</h3>
+      <p>KNPI (Komite Nasional Pemuda Indonesia) lahir melalui Deklarasi Pemuda Indonesia pada 23 Juli 1973 di Jakarta, sebagai wadah berhimpunnya berbagai Organisasi Kemasyarakatan Pemuda (OKP) lintas latar belakang. Sejak saat itu, KNPI berkembang dengan struktur berjenjang dari tingkat pusat hingga kecamatan, yang di tingkat kecamatan dikenal sebagai Pengurus Kecamatan (PK) KNPI.</p>
+      <p>PK KNPI Kecamatan Cibinong merupakan kepanjangan tangan organisasi ini di wilayah Cibinong, berada di bawah koordinasi DPD KNPI Kabupaten Bogor. Posisi Cibinong sebagai ibu kota Kabupaten Bogor menjadikannya cukup strategis. Saat ini, PK KNPI Cibinong dipimpin oleh Yoga Triana Anshory sebagai Ketua.</p>
+      <h3>Peran PK KNPI Cibinong</h3>
+      <p>PK KNPI Cibinong berperan sebagai wadah yang menghimpun berbagai OKP di wilayah Cibinong dalam satu forum komunikasi dan kolaborasi. Organisasi ini juga menjadi mitra pemerintah kecamatan maupun Pemerintah Kabupaten Bogor dengan menjembatani aspirasi pemuda serta mengawal program pembangunan kepemudaan.</p>
+      <p>Dalam aspek pembinaan, PK KNPI Cibinong mendorong pendidikan karakter, peningkatan keterampilan, dan kemandirian generasi muda. PK KNPI Cibinong juga menjaga tata kelola organisasi kepemudaan serta merepresentasikan pemuda Cibinong dalam forum DPD KNPI Kabupaten Bogor.</p>
     </div>
   </div>
 </section>
@@ -36,14 +40,18 @@
   <div class="container">
     <span class="eyebrow">Arah &amp; Tujuan</span>
     <h2>Visi &amp; Misi</h2>
-    <div class="vm-grid" style="margin-top:28px;">
+    <div class="vm-grid">
       <div class="vm-card">
         <h3>Visi</h3>
-        <p id="visiText" style="color:#374151;">Memuat…</p>
+        <p id="visiText">Terwujudnya pemuda Kecamatan Cibinong yang bersatu, bersuara, berkarya, berdaya saing, mandiri, serta memiliki kompetensi dan integritas di era digitalisasi.</p>
       </div>
       <div class="vm-card">
         <h3>Misi</h3>
-        <ol id="misiList" style="color:#374151;"></ol>
+        <ol id="misiList">
+          <li><strong>Konsolidasi &amp; Sinergi.</strong> Membangun koordinasi dan kolaborasi yang kuat antar OKP serta pemerintah setempat di wilayah Cibinong.</li>
+          <li><strong>Pengembangan SDM.</strong> Meningkatkan kualitas kapasitas pemuda dalam bidang kepemimpinan, keterampilan, dan teknologi di era digital.</li>
+          <li><strong>Aksi Nyata.</strong> Menghadirkan program kerja kepemudaan yang solutif dan berdampak langsung pada kegiatan sosial, kemasyarakatan, serta pembangunan daerah.</li>
+        </ol>
       </div>
     </div>
   </div>
@@ -96,7 +104,11 @@ async function loadTentang(){
   if(profil){
     document.getElementById("sejarahText").innerHTML =
       profil.sejarah
-        ? `<p>${escapeHtml(profil.sejarah)}</p>`
+        ? profil.sejarah.split(/\n\s*\n/).map((paragraph, index) =>
+            index === 0
+              ? `<h3>Sejarah</h3><p>${escapeHtml(paragraph)}</p>`
+              : `<p>${escapeHtml(paragraph)}</p>`
+          ).join("")
         : `<p>PK KNPI Cibinong merupakan Pengurus Kecamatan Komite Nasional Pemuda Indonesia yang berkedudukan di Kecamatan Cibinong, Kabupaten Bogor. Sebagai wadah berhimpun organisasi kepemudaan (OKP), KNPI Cibinong berperan menjembatani aspirasi pemuda, mendorong partisipasi dalam pembangunan daerah, serta menjadi mitra strategis pemerintah kecamatan dalam program-program kepemudaan.</p>`;
 
     document.getElementById("visiText").textContent = profil.visi || "-";
@@ -106,7 +118,8 @@ async function loadTentang(){
       const misiArr = JSON.parse(profil.misi || "[]");
       misiList.innerHTML = misiArr.map(m => `<li>${escapeHtml(m)}</li>`).join("");
     }catch(e){
-      misiList.innerHTML = `<li>${escapeHtml(profil.misi || "-")}</li>`;
+      misiList.innerHTML = (profil.misi || "-").split(/\n+/).filter(Boolean)
+        .map(m => `<li>${escapeHtml(m)}</li>`).join("");
     }
   }
 
