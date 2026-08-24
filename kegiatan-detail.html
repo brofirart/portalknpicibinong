@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Kegiatan — Portal KNPI Cibinong</title>
+<link rel="icon" href="assets/img/logo-knpi.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="kegiatan">
+
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Beranda</a> / <a href="kegiatan.html">Kegiatan</a> / <span id="crumbTitle">Detail</span></div>
+  </div>
+</section>
+
+<section class="section content-shift">
+  <div class="container">
+    <div class="card" style="padding:36px;max-width:840px;margin:0 auto;">
+      <div class="detail-body" id="detailWrap">
+        <p>Memuat kegiatan…</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+async function loadDetail(){
+  const slug = getParam("slug");
+  const wrap = document.getElementById("detailWrap");
+  if(!slug){
+    wrap.innerHTML = `<div class="empty-state">Kegiatan tidak ditemukan.</div>`;
+    return;
+  }
+  const { data: k, error } = await supabaseClient
+    .from("kegiatan").select("*").eq("slug", slug).eq("status","published").single();
+
+  if(error || !k){
+    wrap.innerHTML = `<div class="empty-state">Kegiatan tidak ditemukan atau belum diterbitkan.</div>`;
+    return;
+  }
+
+  document.getElementById("pageTitle").textContent = k.judul + " — Portal KNPI Cibinong";
+  document.getElementById("crumbTitle").textContent = k.judul;
+
+  wrap.innerHTML = `
+    <span class="card-tag" style="position:static;display:inline-block;margin-bottom:14px;">Kegiatan</span>
+    <h1>${escapeHtml(k.judul)}</h1>
+    <div class="detail-meta">
+      ${k.tanggal_kegiatan ? formatTanggal(k.tanggal_kegiatan) : ""}
+      ${k.lokasi ? " &middot; " + escapeHtml(k.lokasi) : ""}
+    </div>
+    ${k.gambar_path ? `<img class="cover" src="${publicImageUrl('media', k.gambar_path)}" alt="${escapeHtml(k.judul)}">` : ""}
+    <div class="detail-content">${(k.konten || k.deskripsi || "").split("\n").filter(p=>p.trim()).map(p=>`<p>${escapeHtml(p)}</p>`).join("")}</div>
+    <a href="kegiatan.html" class="card-link" style="margin-top:24px;display:inline-flex;">&larr; Kembali ke Kegiatan</a>
+  `;
+}
+loadDetail();
+</script>
+</body>
+</html>

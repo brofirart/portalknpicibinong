@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tentang Kami — Portal KNPI Cibinong</title>
+<link rel="icon" href="assets/img/logo-knpi.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="tentang">
+
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Beranda</a> / Tentang Kami</div>
+    <h1>Tentang PK KNPI Cibinong</h1>
+  </div>
+</section>
+
+<!-- SEJARAH -->
+<section class="section">
+  <div class="container">
+    <span class="eyebrow">Profil Organisasi</span>
+    <h2 style="max-width:26ch;">Sejarah &amp; Peran PK KNPI Cibinong</h2>
+    <div id="sejarahText" style="max-width:74ch;color:#374151;font-size:1.02rem;">
+      <p>Memuat profil organisasi…</p>
+    </div>
+  </div>
+</section>
+
+<div class="diag-divider flip"></div>
+
+<!-- VISI MISI -->
+<section class="section section-alt">
+  <div class="container">
+    <span class="eyebrow">Arah &amp; Tujuan</span>
+    <h2>Visi &amp; Misi</h2>
+    <div class="vm-grid" style="margin-top:28px;">
+      <div class="vm-card">
+        <h3>Visi</h3>
+        <p id="visiText" style="color:#374151;">Memuat…</p>
+      </div>
+      <div class="vm-card">
+        <h3>Misi</h3>
+        <ol id="misiList" style="color:#374151;"></ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STRUKTUR ORGANISASI -->
+<section class="section">
+  <div class="container">
+    <span class="eyebrow">Kepengurusan</span>
+    <h2>Struktur Organisasi</h2>
+    <div class="org-chart" id="strukturWrap" style="margin-top:28px;">
+      <div class="empty-state">Memuat struktur organisasi…</div>
+    </div>
+  </div>
+</section>
+
+<div class="diag-divider"></div>
+
+<!-- LOKASI -->
+<section class="section section-alt">
+  <div class="container">
+    <span class="eyebrow">Kantor Sekretariat</span>
+    <h2>Lokasi Kami</h2>
+    <div class="contact-grid" style="margin-top:24px;">
+      <div>
+        <p style="font-size:1.05rem;color:#374151;">
+          Jl. Teguh Beriman No.2, Pakansari, Kec. Cibinong, Kabupaten Bogor, Jawa Barat 16915
+        </p>
+        <a class="btn btn-blue" target="_blank"
+           href="https://www.google.com/maps/search/?api=1&query=Jl.+Teguh+Beriman+No.2+Pakansari+Cibinong+Bogor">
+           Buka di Google Maps
+        </a>
+      </div>
+      <iframe class="map-frame"
+        src="https://www.google.com/maps?q=Jl.+Teguh+Beriman+No.2,+Pakansari,+Kec.+Cibinong,+Kabupaten+Bogor,+Jawa+Barat+16915&output=embed"
+        loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+async function loadTentang(){
+  // Profil (sejarah, visi, misi)
+  const { data: profil } = await supabaseClient.from("profil_organisasi").select("*").eq("id",1).single();
+  if(profil){
+    document.getElementById("sejarahText").innerHTML =
+      profil.sejarah
+        ? `<p>${escapeHtml(profil.sejarah)}</p>`
+        : `<p>PK KNPI Cibinong merupakan Pengurus Kecamatan Komite Nasional Pemuda Indonesia yang berkedudukan di Kecamatan Cibinong, Kabupaten Bogor. Sebagai wadah berhimpun organisasi kepemudaan (OKP), KNPI Cibinong berperan menjembatani aspirasi pemuda, mendorong partisipasi dalam pembangunan daerah, serta menjadi mitra strategis pemerintah kecamatan dalam program-program kepemudaan.</p>`;
+
+    document.getElementById("visiText").textContent = profil.visi || "-";
+
+    const misiList = document.getElementById("misiList");
+    try{
+      const misiArr = JSON.parse(profil.misi || "[]");
+      misiList.innerHTML = misiArr.map(m => `<li>${escapeHtml(m)}</li>`).join("");
+    }catch(e){
+      misiList.innerHTML = `<li>${escapeHtml(profil.misi || "-")}</li>`;
+    }
+  }
+
+  // Struktur organisasi
+  const { data: struktur } = await supabaseClient
+    .from("struktur_organisasi").select("*").order("urutan",{ascending:true});
+
+  const wrap = document.getElementById("strukturWrap");
+  if(!struktur || struktur.length === 0){
+    wrap.innerHTML = `<div class="empty-state">Struktur organisasi belum ditambahkan admin.</div>`;
+  } else {
+    const top = struktur.filter(s => s.urutan === 0);
+    const rest = struktur.filter(s => s.urutan !== 0);
+    wrap.innerHTML = `
+      <div class="org-row">
+        ${top.map(s => `
+          <div class="org-card top">
+            <div class="role">${escapeHtml(s.jabatan)}</div>
+            <div class="name">${escapeHtml(s.nama)}</div>
+          </div>`).join("")}
+      </div>
+      <div class="org-row">
+        ${rest.map(s => `
+          <div class="org-card">
+            <div class="role">${escapeHtml(s.jabatan)}</div>
+            <div class="name">${escapeHtml(s.nama)}</div>
+          </div>`).join("")}
+      </div>
+    `;
+  }
+}
+loadTentang();
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galeri — Portal KNPI Cibinong</title>
+<link rel="icon" href="assets/img/logo-knpi.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="galeri">
+
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Beranda</a> / Galeri</div>
+    <h1>Galeri Dokumentasi</h1>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="gallery-grid" id="galeriGrid">
+      <div class="empty-state" style="grid-column:1/-1;">Memuat galeri…</div>
+    </div>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">&times;</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+async function loadGaleri(){
+  const { data, error } = await supabaseClient
+    .from("galeri").select("*").order("created_at",{ascending:false});
+
+  const wrap = document.getElementById("galeriGrid");
+  if(error || !data || data.length === 0){
+    wrap.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">Belum ada dokumentasi yang ditambahkan.</div>`;
+    return;
+  }
+  wrap.innerHTML = data.map(g => `
+    <div class="gallery-item" data-src="${publicImageUrl('media', g.gambar_path)}" data-title="${escapeHtml(g.judul || '')}">
+      <img src="${publicImageUrl('media', g.gambar_path)}" alt="${escapeHtml(g.judul || 'Dokumentasi')}" loading="lazy">
+    </div>
+  `).join("");
+
+  document.querySelectorAll(".gallery-item").forEach(item => {
+    item.addEventListener("click", () => {
+      document.getElementById("lightboxImg").src = item.dataset.src;
+      document.getElementById("lightboxImg").alt = item.dataset.title;
+      document.getElementById("lightbox").classList.add("open");
+    });
+  });
+}
+document.getElementById("lightboxClose").addEventListener("click", () => {
+  document.getElementById("lightbox").classList.remove("open");
+});
+document.getElementById("lightbox").addEventListener("click", (e) => {
+  if(e.target.id === "lightbox") document.getElementById("lightbox").classList.remove("open");
+});
+loadGaleri();
+</script>
+</body>
+</html>

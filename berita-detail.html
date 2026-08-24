@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Berita — Portal KNPI Cibinong</title>
+<link rel="icon" href="assets/img/logo-knpi.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="berita">
+
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Beranda</a> / <a href="berita.html">Berita</a> / <span id="crumbTitle">Detail</span></div>
+  </div>
+</section>
+
+<section class="section content-shift">
+  <div class="container">
+    <div class="card" style="padding:36px;max-width:840px;margin:0 auto;">
+      <div class="detail-body" id="detailWrap">
+        <p>Memuat berita…</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+async function loadDetail(){
+  const slug = getParam("slug");
+  const wrap = document.getElementById("detailWrap");
+  if(!slug){
+    wrap.innerHTML = `<div class="empty-state">Berita tidak ditemukan.</div>`;
+    return;
+  }
+  const { data: b, error } = await supabaseClient
+    .from("berita").select("*").eq("slug", slug).eq("status","published").single();
+
+  if(error || !b){
+    wrap.innerHTML = `<div class="empty-state">Berita tidak ditemukan atau belum diterbitkan.</div>`;
+    return;
+  }
+
+  document.getElementById("pageTitle").textContent = b.judul + " — Portal KNPI Cibinong";
+  document.getElementById("crumbTitle").textContent = b.judul;
+
+  wrap.innerHTML = `
+    <span class="card-tag" style="position:static;display:inline-block;margin-bottom:14px;">${escapeHtml(b.kategori || "Umum")}</span>
+    <h1>${escapeHtml(b.judul)}</h1>
+    <div class="detail-meta">${formatTanggal(b.created_at)} &middot; ${escapeHtml(b.penulis || "Admin PK KNPI Cibinong")}</div>
+    ${b.gambar_path ? `<img class="cover" src="${publicImageUrl('media', b.gambar_path)}" alt="${escapeHtml(b.judul)}">` : ""}
+    <div class="detail-content">${(b.konten || "").split("\n").filter(p=>p.trim()).map(p=>`<p>${escapeHtml(p)}</p>`).join("")}</div>
+    <a href="berita.html" class="card-link" style="margin-top:24px;display:inline-flex;">&larr; Kembali ke Berita</a>
+  `;
+}
+loadDetail();
+</script>
+</body>
+</html>

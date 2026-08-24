@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kegiatan — Portal KNPI Cibinong</title>
+<link rel="icon" href="assets/img/logo-knpi.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="kegiatan">
+
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Beranda</a> / Kegiatan</div>
+    <h1>Kegiatan &amp; Program Kerja</h1>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-3" id="kegiatanList">
+      <div class="empty-state">Memuat kegiatan…</div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+async function loadKegiatan(){
+  const { data, error } = await supabaseClient
+    .from("kegiatan").select("*").eq("status","published")
+    .order("tanggal_kegiatan",{ascending:false});
+
+  const wrap = document.getElementById("kegiatanList");
+  if(error || !data || data.length === 0){
+    wrap.innerHTML = `<div class="empty-state">Belum ada kegiatan yang ditampilkan.</div>`;
+    return;
+  }
+  wrap.innerHTML = data.map(k => `
+    <a href="kegiatan-detail.html?slug=${k.slug}" class="card">
+      <div class="card-media">
+        <span class="card-tag">Kegiatan</span>
+        <img src="${publicImageUrl('media', k.gambar_path)}" alt="${escapeHtml(k.judul)}">
+      </div>
+      <div class="card-body">
+        <span class="card-date">${k.tanggal_kegiatan ? formatTanggal(k.tanggal_kegiatan) : ""} ${k.lokasi ? " &middot; " + escapeHtml(k.lokasi) : ""}</span>
+        <h3>${escapeHtml(k.judul)}</h3>
+        <p>${escapeHtml(k.deskripsi || "")}</p>
+        <span class="card-link">Lihat detail</span>
+      </div>
+    </a>
+  `).join("");
+}
+loadKegiatan();
+</script>
+</body>
+</html>

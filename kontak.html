@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kontak — Portal KNPI Cibinong</title>
+<link rel="icon" href="assets/img/logo-knpi.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="kontak">
+
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Beranda</a> / Kontak</div>
+    <h1>Hubungi Kami</h1>
+  </div>
+</section>
+
+<section class="section content-shift">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="card" style="padding:32px;">
+        <span class="eyebrow">Kirim Pesan</span>
+        <h2>Sampaikan Pertanyaan atau Kolaborasi</h2>
+        <div class="form-msg" id="formMsg"></div>
+        <form id="contactForm">
+          <div class="form-field">
+            <label for="nama">Nama Lengkap</label>
+            <input type="text" id="nama" required>
+          </div>
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="form-field">
+            <label for="subjek">Subjek</label>
+            <input type="text" id="subjek">
+          </div>
+          <div class="form-field">
+            <label for="pesan">Pesan</label>
+            <textarea id="pesan" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-blue btn-block" id="submitBtn">Kirim Pesan</button>
+        </form>
+      </div>
+
+      <div>
+        <div class="card" style="padding:32px;margin-bottom:24px;">
+          <div class="contact-info-item">
+            <div class="ic">📍</div>
+            <div>
+              <strong>Alamat Sekretariat</strong>
+              <p style="margin:4px 0 0;color:#4b5563;">Jl. Teguh Beriman No.2, Pakansari, Kec. Cibinong, Kabupaten Bogor, Jawa Barat 16915</p>
+            </div>
+          </div>
+          <div class="contact-info-item" id="teleponBlock" style="display:none;">
+            <div class="ic">📞</div>
+            <div><strong>Telepon</strong><p style="margin:4px 0 0;color:#4b5563;" id="teleponText"></p></div>
+          </div>
+          <div class="contact-info-item" id="emailBlock" style="display:none;">
+            <div class="ic">✉️</div>
+            <div><strong>Email</strong><p style="margin:4px 0 0;color:#4b5563;" id="emailText"></p></div>
+          </div>
+        </div>
+        <iframe class="map-frame"
+          src="https://www.google.com/maps?q=Jl.+Teguh+Beriman+No.2,+Pakansari,+Kec.+Cibinong,+Kabupaten+Bogor,+Jawa+Barat+16915&output=embed"
+          loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+async function loadKontakInfo(){
+  const { data: profil } = await supabaseClient.from("profil_organisasi").select("*").eq("id",1).single();
+  if(profil){
+    if(profil.telepon){
+      document.getElementById("teleponBlock").style.display = "flex";
+      document.getElementById("teleponText").textContent = profil.telepon;
+    }
+    if(profil.email){
+      document.getElementById("emailBlock").style.display = "flex";
+      document.getElementById("emailText").textContent = profil.email;
+    }
+  }
+}
+loadKontakInfo();
+
+document.getElementById("contactForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("submitBtn");
+  const msgBox = document.getElementById("formMsg");
+  btn.textContent = "Mengirim…";
+  btn.disabled = true;
+
+  const payload = {
+    nama: document.getElementById("nama").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    subjek: document.getElementById("subjek").value.trim(),
+    pesan: document.getElementById("pesan").value.trim(),
+  };
+
+  const { error } = await supabaseClient.from("pesan_kontak").insert(payload);
+
+  msgBox.className = "form-msg show";
+  if(error){
+    msgBox.classList.add("error");
+    msgBox.textContent = "Gagal mengirim pesan. Silakan coba lagi.";
+  } else {
+    msgBox.classList.add("success");
+    msgBox.textContent = "Pesan berhasil dikirim. Terima kasih!";
+    document.getElementById("contactForm").reset();
+  }
+  btn.textContent = "Kirim Pesan";
+  btn.disabled = false;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Berita — Portal KNPI Cibinong</title>
+<link rel="icon" href="assets/img/logo-knpi.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="berita">
+
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Beranda</a> / Berita</div>
+    <h1>Berita &amp; Informasi</h1>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-3" id="beritaList">
+      <div class="empty-state">Memuat berita…</div>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+async function loadBerita(){
+  const { data, error } = await supabaseClient
+    .from("berita").select("*").eq("status","published")
+    .order("created_at",{ascending:false});
+
+  const wrap = document.getElementById("beritaList");
+  if(error || !data || data.length === 0){
+    wrap.innerHTML = `<div class="empty-state">Belum ada berita yang diterbitkan.</div>`;
+    return;
+  }
+  wrap.innerHTML = data.map(b => `
+    <a href="berita-detail.html?slug=${b.slug}" class="card">
+      <div class="card-media">
+        <span class="card-tag">${escapeHtml(b.kategori || "Umum")}</span>
+        <img src="${publicImageUrl('media', b.gambar_path)}" alt="${escapeHtml(b.judul)}">
+      </div>
+      <div class="card-body">
+        <span class="card-date">${formatTanggal(b.created_at)}</span>
+        <h3>${escapeHtml(b.judul)}</h3>
+        <p>${escapeHtml(b.ringkasan || "")}</p>
+        <span class="card-link">Baca selengkapnya</span>
+      </div>
+    </a>
+  `).join("");
+}
+loadBerita();
+</script>
+</body>
+</html>

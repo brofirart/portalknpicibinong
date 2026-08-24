@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Admin — Portal KNPI Cibinong</title>
+<link rel="icon" href="../assets/img/logo-knpi.png">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<div class="login-shell">
+  <div class="login-card">
+    <div class="brand">
+      <img src="../assets/img/logo-portal.png" alt="Portal KNPI Cibinong" style="height:44px;">
+    </div>
+    <h2 style="text-align:center;">Login Admin</h2>
+    <p style="text-align:center;color:#6b7280;font-size:.9rem;margin-bottom:24px;">Khusus pengurus PK KNPI Cibinong yang berwenang.</p>
+
+    <div class="form-msg" id="loginMsg"></div>
+
+    <form id="loginForm">
+      <div class="form-field">
+        <label for="email">Email</label>
+        <input type="email" id="email" required autocomplete="username">
+      </div>
+      <div class="form-field">
+        <label for="password">Kata Sandi</label>
+        <input type="password" id="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-blue btn-block" id="loginBtn">Masuk</button>
+    </form>
+    <p style="text-align:center;margin-top:20px;">
+      <a href="../index.html" style="color:var(--blue-deep);font-size:.85rem;">&larr; Kembali ke Beranda</a>
+    </p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/supabase-client.js"></script>
+<script>
+// Jika sudah login, langsung ke dashboard
+(async () => {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if(session) window.location.href = "dashboard.html";
+})();
+
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("loginBtn");
+  const msgBox = document.getElementById("loginMsg");
+  btn.textContent = "Memproses…";
+  btn.disabled = true;
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+  if(error){
+    msgBox.className = "form-msg show error";
+    msgBox.textContent = "Email atau kata sandi salah.";
+    btn.textContent = "Masuk";
+    btn.disabled = false;
+  } else {
+    window.location.href = "dashboard.html";
+  }
+});
+</script>
+</body>
+</html>

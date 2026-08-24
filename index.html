@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal KNPI Cibinong — Wadah Pemuda Kecamatan Cibinong</title>
+<meta name="description" content="Portal resmi PK KNPI Cibinong: berita, kegiatan, dan dokumentasi program kepemudaan Kecamatan Cibinong.">
+<link rel="icon" href="assets/img/logo-knpi.png">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="beranda">
+
+<div id="site-header"></div>
+
+<section class="hero">
+  <div class="container">
+    <div>
+      <span class="eyebrow" style="color:#FFD500;">Portal Resmi Kepemudaan Cibinong</span>
+      <h1>Menghimpun Semangat Pemuda, Membangun Cibinong.</h1>
+      <p class="lead">PK KNPI Cibinong adalah wadah pemersatu organisasi kepemudaan di Kecamatan Cibinong — mendorong kepeloporan, kepemimpinan, dan kontribusi nyata bagi masyarakat.</p>
+      <div class="hero-actions">
+        <a href="tentang.html" class="btn btn-gold">Kenali Kami</a>
+        <a href="kegiatan.html" class="btn btn-outline">Lihat Kegiatan</a>
+      </div>
+    </div>
+    <div class="hero-emblem">
+      <img src="assets/img/logo-knpi.png" alt="Lambang KNPI">
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="container grid grid-3">
+    <div><strong id="statBerita">–</strong><span>Berita Diterbitkan</span></div>
+    <div><strong id="statKegiatan">–</strong><span>Kegiatan Terlaksana</span></div>
+    <div><strong id="statGaleri">–</strong><span>Dokumentasi Foto</span></div>
+  </div>
+</section>
+
+<!-- BERITA TERBARU -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Update Terkini</span>
+        <h2>Berita Terbaru</h2>
+      </div>
+      <a href="berita.html" class="btn btn-blue">Semua Berita</a>
+    </div>
+    <div class="grid grid-3" id="beritaTerbaru">
+      <div class="empty-state">Memuat berita…</div>
+    </div>
+  </div>
+</section>
+
+<div class="diag-divider"></div>
+
+<!-- KEGIATAN MENDATANG -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Agenda</span>
+        <h2>Kegiatan Terbaru</h2>
+      </div>
+      <a href="kegiatan.html" class="btn btn-blue">Semua Kegiatan</a>
+    </div>
+    <div class="grid grid-3" id="kegiatanTerbaru">
+      <div class="empty-state">Memuat kegiatan…</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+  <div class="container" style="text-align:center;">
+    <span class="eyebrow" style="justify-content:center;">Bergabung &amp; Berkolaborasi</span>
+    <h2 style="max-width:32ch;margin:0 auto 20px;">Punya program atau ingin bermitra dengan PK KNPI Cibinong?</h2>
+    <a href="kontak.html" class="btn btn-blue">Hubungi Kami</a>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+async function loadBeranda(){
+  // ---- Berita terbaru ----
+  const beritaWrap = document.getElementById("beritaTerbaru");
+  const { data: berita, error: errBerita } = await supabaseClient
+    .from("berita").select("*").eq("status","published")
+    .order("created_at",{ascending:false}).limit(3);
+
+  if(errBerita || !berita || berita.length === 0){
+    beritaWrap.innerHTML = `<div class="empty-state">Belum ada berita yang diterbitkan.</div>`;
+  } else {
+    beritaWrap.innerHTML = berita.map(b => `
+      <a href="berita-detail.html?slug=${b.slug}" class="card">
+        <div class="card-media">
+          <span class="card-tag">${escapeHtml(b.kategori || "Umum")}</span>
+          <img src="${publicImageUrl('media', b.gambar_path)}" alt="${escapeHtml(b.judul)}">
+        </div>
+        <div class="card-body">
+          <span class="card-date">${formatTanggal(b.created_at)}</span>
+          <h3>${escapeHtml(b.judul)}</h3>
+          <p>${escapeHtml(b.ringkasan || "")}</p>
+          <span class="card-link">Baca selengkapnya</span>
+        </div>
+      </a>
+    `).join("");
+  }
+
+  // ---- Kegiatan terbaru ----
+  const kegiatanWrap = document.getElementById("kegiatanTerbaru");
+  const { data: kegiatan, error: errKeg } = await supabaseClient
+    .from("kegiatan").select("*").eq("status","published")
+    .order("tanggal_kegiatan",{ascending:false}).limit(3);
+
+  if(errKeg || !kegiatan || kegiatan.length === 0){
+    kegiatanWrap.innerHTML = `<div class="empty-state">Belum ada kegiatan yang ditampilkan.</div>`;
+  } else {
+    kegiatanWrap.innerHTML = kegiatan.map(k => `
+      <a href="kegiatan-detail.html?slug=${k.slug}" class="card">
+        <div class="card-media">
+          <span class="card-tag">Kegiatan</span>
+          <img src="${publicImageUrl('media', k.gambar_path)}" alt="${escapeHtml(k.judul)}">
+        </div>
+        <div class="card-body">
+          <span class="card-date">${k.tanggal_kegiatan ? formatTanggal(k.tanggal_kegiatan) : ""}</span>
+          <h3>${escapeHtml(k.judul)}</h3>
+          <p>${escapeHtml(k.deskripsi || "")}</p>
+          <span class="card-link">Lihat detail</span>
+        </div>
+      </a>
+    `).join("");
+  }
+
+  // ---- Statistik ----
+  const [{count: cBerita}, {count: cKegiatan}, {count: cGaleri}] = await Promise.all([
+    supabaseClient.from("berita").select("*",{count:"exact",head:true}).eq("status","published"),
+    supabaseClient.from("kegiatan").select("*",{count:"exact",head:true}).eq("status","published"),
+    supabaseClient.from("galeri").select("*",{count:"exact",head:true}),
+  ]);
+  document.getElementById("statBerita").textContent = cBerita ?? 0;
+  document.getElementById("statKegiatan").textContent = cKegiatan ?? 0;
+  document.getElementById("statGaleri").textContent = cGaleri ?? 0;
+}
+loadBeranda();
+</script>
+</body>
+</html>

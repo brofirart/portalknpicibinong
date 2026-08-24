@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin — Portal KNPI Cibinong</title>
+<link rel="icon" href="../assets/img/logo-knpi.png">
+<link rel="stylesheet" href="../assets/css/style.css">
+<style>
+  body{ background:var(--paper); }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+  .modal-overlay{ position:fixed; inset:0; background:rgba(18,21,26,.55); display:none; align-items:flex-start; justify-content:center; padding:40px 20px; z-index:200; overflow:auto; }
+  .modal-overlay.open{ display:flex; }
+  .modal-box{ background:#fff; border-radius:8px; padding:28px; width:100%; max-width:560px; }
+  .modal-box .form-actions{ display:flex; gap:10px; margin-top:8px; }
+  .btn-ghost{ background:#eef1f5; color:var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <span class="brand-text">Admin Portal<br>KNPI Cibinong</span>
+    <a href="#" class="tab-link active" data-tab="berita">📰 Berita</a>
+    <a href="#" class="tab-link" data-tab="kegiatan">📅 Kegiatan</a>
+    <a href="#" class="tab-link" data-tab="galeri">🖼️ Galeri</a>
+    <a href="#" class="tab-link" data-tab="profil">🏛️ Profil &amp; Visi Misi</a>
+    <a href="#" class="tab-link" data-tab="struktur">👥 Struktur Organisasi</a>
+    <a href="#" class="tab-link" data-tab="pesan">✉️ Pesan Masuk</a>
+    <a href="../index.html" style="margin-top:20px;border-top:1px solid #2a2f38;padding-top:20px;">🌐 Lihat Website</a>
+    <a href="#" id="logoutBtn" style="color:#f2a2a2;">🚪 Keluar</a>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h2 id="tabTitle" style="margin:0;">Kelola Berita</h2>
+      <button class="btn btn-blue" id="addBtn">+ Tambah</button>
+    </div>
+
+    <!-- BERITA -->
+    <section class="tab-panel active" id="panel-berita">
+      <div class="admin-card">
+        <table class="table-simple">
+          <thead><tr><th>Judul</th><th>Kategori</th><th>Status</th><th>Tanggal</th><th></th></tr></thead>
+          <tbody id="tableBerita"><tr><td colspan="5">Memuat…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- KEGIATAN -->
+    <section class="tab-panel" id="panel-kegiatan">
+      <div class="admin-card">
+        <table class="table-simple">
+          <thead><tr><th>Judul</th><th>Lokasi</th><th>Tanggal</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tableKegiatan"><tr><td colspan="5">Memuat…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- GALERI -->
+    <section class="tab-panel" id="panel-galeri">
+      <div class="admin-card">
+        <div class="gallery-grid" id="gridGaleri" style="grid-template-columns:repeat(5,1fr);"></div>
+      </div>
+    </section>
+
+    <!-- PROFIL -->
+    <section class="tab-panel" id="panel-profil">
+      <div class="admin-card">
+        <form id="formProfil">
+          <div class="form-field"><label>Sejarah / Profil Singkat</label><textarea id="p_sejarah" style="min-height:140px;"></textarea></div>
+          <div class="form-field"><label>Visi</label><textarea id="p_visi"></textarea></div>
+          <div class="form-field"><label>Misi (satu poin per baris)</label><textarea id="p_misi" style="min-height:140px;"></textarea></div>
+          <div class="form-field"><label>Telepon</label><input id="p_telepon"></div>
+          <div class="form-field"><label>Email</label><input id="p_email"></div>
+          <button type="submit" class="btn btn-blue">Simpan Perubahan</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- STRUKTUR -->
+    <section class="tab-panel" id="panel-struktur">
+      <div class="admin-card">
+        <table class="table-simple">
+          <thead><tr><th>Urutan</th><th>Nama</th><th>Jabatan</th><th></th></tr></thead>
+          <tbody id="tableStruktur"><tr><td colspan="4">Memuat…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PESAN -->
+    <section class="tab-panel" id="panel-pesan">
+      <div class="admin-card">
+        <table class="table-simple">
+          <thead><tr><th>Nama</th><th>Email</th><th>Subjek</th><th>Pesan</th><th>Tanggal</th></tr></thead>
+          <tbody id="tablePesan"><tr><td colspan="5">Memuat…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL FORM (dipakai bergantian untuk Berita / Kegiatan / Galeri / Struktur) -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h3 id="modalTitle">Tambah Data</h3>
+    <form id="modalForm"></form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/supabase-client.js"></script>
+<script src="../assets/js/admin.js"></script>
+</body>
+</html>
