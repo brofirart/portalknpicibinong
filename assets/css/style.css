@@ -256,7 +256,7 @@ button{ font-family:inherit; cursor:pointer; }
 .history-content{ max-width:78ch; color:#374151; font-size:1.02rem; }
 .history-content h3{ color:var(--blue-deep); font-size:1.12rem; margin:28px 0 10px; }
 .history-content h3:first-child{ margin-top:0; }
-.history-content p{ margin:0 0 16px; }
+.history-content p{ margin:0 0 16px; text-align:justify; }
 .vm-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
 @media (max-width:800px){ .vm-grid{ grid-template-columns:1fr; } }
 .vm-card{ background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow-card); padding:32px 32px 28px 36px; position:relative; }
@@ -264,9 +264,9 @@ button{ font-family:inherit; cursor:pointer; }
   content:""; position:absolute; top:0; left:0; width:6px; height:100%; background:var(--gold);
 }
 .vm-card h3{ color:var(--blue-deep); font-size:1.35rem; margin-bottom:16px; }
-.vm-card p{ color:#374151; margin:0; }
+.vm-card p{ color:#374151; margin:0; text-align:justify; }
 .vm-card ol,.vm-card ul{ padding-left:1.2em; list-style:decimal; }
-.vm-card li{ margin-bottom:14px; color:#374151; padding-left:4px; }
+.vm-card li{ margin-bottom:14px; color:#374151; padding-left:4px; text-align:justify; }
 .vm-card li:last-child{ margin-bottom:0; }
 
 /* ---------- Galeri ---------- */
