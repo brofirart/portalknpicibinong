@@ -89,3 +89,5 @@ Warna dan tipografi diambil langsung dari lambang KNPI:
 - Tambah pagination di halaman Berita/Kegiatan jika jumlah data sudah banyak.
 - Tambah upload foto ke tabel `struktur_organisasi` (kolom `foto_path` sudah tersedia di schema, tinggal ditambahkan input file di form admin).
 - Tambah kategori/filter di halaman Galeri.
+
+Website ini digunakan untuk memberikan informasi seputar PK KNPI Cibinong.
